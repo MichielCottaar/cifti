@@ -548,6 +548,18 @@ class Scalar(Axis):
         return self.arr['name'][index], self.arr['meta'][index]
 
     def to_label(self, labels):
+        """
+        Creates a new Label axis based on the Scalar axis
+
+        Parameters
+        ----------
+        labels : dict
+            mapping from integers to (name, (R, G, B, A)), where `name` is a string and R, G, B, and A are floats between 0 and 1 giving the colour and alpha (transparency)
+
+        Returns
+        -------
+        Label
+        """
         """Creates a new Label axes based on the Scalar
         """
         res = np.zeros(self.size, dtype=Label._use_dtype)
