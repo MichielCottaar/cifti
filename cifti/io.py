@@ -1,6 +1,7 @@
 from . import axis
 import nibabel
 from nibabel import cifti2
+import numpy as np
 
 
 def load(file):
@@ -46,7 +47,7 @@ def save(filename, arr, axes):
     axes : list[axis.Axis]
         axis explaining each of the dimensions in the arr
     """
-    img = cifti2.Cifti2Image(arr, axis.to_header(axes))
+    img = cifti2.Cifti2Image(np.asarray(arr), axis.to_header(axes))
     img.to_filename(filename)
 
 
