@@ -167,7 +167,7 @@ class BrainModel(Axis):
         return cls(arr)
 
     @classmethod
-    def from_mask(cls, mask, affine, structure='other'):
+    def from_mask(cls, mask, affine, brain_structure='other'):
         """
         Creates a new BrainModel axis describing the provided mask
 
@@ -177,7 +177,7 @@ class BrainModel(Axis):
             all non-zero voxels will be included in the BrainModel axis
         affine : np.ndarray
             (4, 4) array with the voxel to mm transformation
-        structure : str
+        brain_structure : str
             Name of the brain structure (e.g. 'thalamus_left' or 'brain_stem')
 
         Returns
@@ -187,14 +187,14 @@ class BrainModel(Axis):
         voxels = np.array(np.where(mask != 0)).T
         arr = np.zeros(len(voxels), dtype=cls._use_dtype)
         arr['voxel'] = voxels
-        bs = structure.from_string(structure, is_surface=False)
+        bs = structure.from_string(brain_structure, is_surface=False)
         bs.affine = affine
         bs.shape = mask.shape
         arr['struc'] = bs
         return cls(arr)
 
     @classmethod
-    def from_vertex(cls, vertices, nvertex, structure='Cortex'):
+    def from_vertex(cls, vertices, nvertex, brain_structure='Cortex'):
         """
         Creates a new BrainModel axis describing the vertices on a surface
 
@@ -204,7 +204,7 @@ class BrainModel(Axis):
             indices of the vertices on the surface
         nvertes : int
             total number of vertices on the surface
-        structure : str
+        brain_structure : str
             Name of the brain structure (e.g. 'CortexLeft' or 'CortexRight')
 
         Returns
@@ -214,7 +214,7 @@ class BrainModel(Axis):
         arr = np.zeros(len(vertices), dtype=cls._use_dtype)
         arr['vertex'] = vertices
         arr['surface'] = True
-        bs = structure.from_string(structure, is_surface=True)
+        bs = structure.from_string(brain_structure, is_surface=True)
         bs.nvertex = nvertex
         arr['struc'] = bs
         return cls(arr)
@@ -269,7 +269,7 @@ class BrainModel(Axis):
             idx_start = np.where(self.struc == struc)[0].min()
             cifti_bm = cifti2.Cifti2BrainModel(idx_start, len(bm),
                                                'CIFTI_MODEL_TYPE_SURFACE' if is_surface else 'CIFTI_MODEL_TYPE_VOXELS',
-                                               struc.cifti(), nsurf, voxels, vertices)
+                                               struc.cifti, nsurf, voxels, vertices)
             mim.append(cifti_bm)
         return mim
 
@@ -404,7 +404,7 @@ class Parcels(Axis):
             element = cifti2.Cifti2Parcel(name, voxels)
             for bm, struc in parcel.iter_structures():
                 if struc.model_type == 'surface':
-                    element.vertices.append(cifti2.Cifti2Vertices(struc.cifti(), bm.arr['vertex']))
+                    element.vertices.append(cifti2.Cifti2Vertices(struc.cifti, bm.arr['vertex']))
             mim.append(element)
         return mim
 
