@@ -8,7 +8,8 @@ Each type of CIFTI axes describing the rows/columns in a CIFTI matrix is given a
 - `Label`: each row/column has a unique name and label table (with optional meta-data)
 All of these classes are derived from `Axis`
 
-IO to and from CIFTI files (through `load` and `save`) expects a matrix as well as a pair of axes objects describing the rows and columns of the matrix
+Reading a CIFTI file (through `load`) will return a matrix and a pair of axes describing the rows and columns of the matrix.
+Similarly to write a CIFTI file (through `save`) requires a matrix and a pair of axes.
 
 Cifti axes of the same type can be concatenated by adding them together.
 Numpy indexing also works on them (except for Series objects, which have to remain monotonically increasing or decreasing)
