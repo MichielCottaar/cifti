@@ -14,5 +14,5 @@ Series : cifti axis describing a time series
 Scalar : cifti axis where each row/column has its own name
 Label : cifti axis where each row/column has its own name and label table
 """
-from .io import load, save
+from .io import read, write
 from .axis import Axis, Series, Parcels, BrainModel, Label, Scalar

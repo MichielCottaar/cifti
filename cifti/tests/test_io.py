@@ -74,8 +74,8 @@ def check_Conte69(brain_model):
 
 def check_rewrite(arr, axes, extension='.nii'):
     (fd, name) = tempfile.mkstemp(extension)
-    io.save(name, arr, axes)
-    arr2, axes2 = io.load(name)
+    io.write(name, arr, axes)
+    arr2, axes2 = io.read(name)
     assert (arr == arr2).all()
     assert (axes == axes2)
     return arr2, axes2
@@ -83,7 +83,7 @@ def check_rewrite(arr, axes, extension='.nii'):
 
 @needs_nibabel_data('nitest-cifti2')
 def test_read_ones():
-    arr, axes = io.load(os.path.join(dirname, 'ones.dscalar.nii'))
+    arr, axes = io.read(os.path.join(dirname, 'ones.dscalar.nii'))
     assert (arr == 1).all()
     assert isinstance(axes[0], axis.Scalar)
     assert len(axes[0]) == 1
@@ -96,7 +96,7 @@ def test_read_ones():
 
 @needs_nibabel_data('nitest-cifti2')
 def test_read_conte69_dscalar():
-    arr, axes = io.load(os.path.join(dirname, 'Conte69.MyelinAndCorrThickness.32k_fs_LR.dscalar.nii'))
+    arr, axes = io.read(os.path.join(dirname, 'Conte69.MyelinAndCorrThickness.32k_fs_LR.dscalar.nii'))
     assert isinstance(axes[0], axis.Scalar)
     assert len(axes[0]) == 2
     assert axes[0].name[0] == 'MyelinMap_BC_decurv'
@@ -108,7 +108,7 @@ def test_read_conte69_dscalar():
 
 @needs_nibabel_data('nitest-cifti2')
 def test_read_conte69_dtseries():
-    arr, axes = io.load(os.path.join(dirname, 'Conte69.MyelinAndCorrThickness.32k_fs_LR.dtseries.nii'))
+    arr, axes = io.read(os.path.join(dirname, 'Conte69.MyelinAndCorrThickness.32k_fs_LR.dtseries.nii'))
     assert isinstance(axes[0], axis.Series)
     assert len(axes[0]) == 2
     assert axes[0].start == 0
@@ -121,7 +121,7 @@ def test_read_conte69_dtseries():
 
 @needs_nibabel_data('nitest-cifti2')
 def test_read_conte69_dlabel():
-    arr, axes = io.load(os.path.join(dirname, 'Conte69.parcellations_VGD11b.32k_fs_LR.dlabel.nii'))
+    arr, axes = io.read(os.path.join(dirname, 'Conte69.parcellations_VGD11b.32k_fs_LR.dlabel.nii'))
     assert isinstance(axes[0], axis.Label)
     assert len(axes[0]) == 3
     assert (axes[0].name == ['Composite Parcellation-lh (FRB08_OFP03_retinotopic)',
@@ -134,7 +134,7 @@ def test_read_conte69_dlabel():
 
 @needs_nibabel_data('nitest-cifti2')
 def test_read_conte69_ptseries():
-    arr, axes = io.load(os.path.join(dirname, 'Conte69.MyelinAndCorrThickness.32k_fs_LR.ptseries.nii'))
+    arr, axes = io.read(os.path.join(dirname, 'Conte69.MyelinAndCorrThickness.32k_fs_LR.ptseries.nii'))
     assert isinstance(axes[0], axis.Series)
     assert len(axes[0]) == 2
     assert axes[0].start == 0

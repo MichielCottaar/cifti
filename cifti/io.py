@@ -3,7 +3,7 @@ from nibabel import cifti2
 import numpy as np
 
 
-def load(file):
+def read(file):
     """
     Loads a CIFTI file
 
@@ -34,7 +34,7 @@ def load(file):
     return arr, axes
 
 
-def save(filename, arr, axes):
+def write(filename, arr, axes):
     """
     Saves a CIFTI file
 
