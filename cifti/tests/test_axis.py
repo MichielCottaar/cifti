@@ -17,8 +17,8 @@ def brain_models():
     mask[0, 0, 0] = True
     yield axis.BrainModel.from_mask(mask, rand_affine)
 
-    yield axis.BrainModel.from_vertex([0, 5, 10], 15, 'CortexLeft')
-    yield axis.BrainModel.from_vertex([0, 5, 10, 13], 15)
+    yield axis.BrainModel.from_surface([0, 5, 10], 15, 'CortexLeft')
+    yield axis.BrainModel.from_surface([0, 5, 10, 13], 15)
 
 
 def parcels():

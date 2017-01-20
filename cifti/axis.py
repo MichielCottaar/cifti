@@ -194,7 +194,7 @@ class BrainModel(Axis):
         return cls(arr)
 
     @classmethod
-    def from_vertex(cls, vertices, nvertex, brain_structure='Cortex'):
+    def from_surface(cls, vertices, nvertex, brain_structure='Cortex'):
         """
         Creates a new BrainModel axis describing the vertices on a surface
 
