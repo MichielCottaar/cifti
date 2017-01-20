@@ -1,6 +1,6 @@
-This module allows for straight-forward creation of the CIFTI files and the read/writing of old ones
+This module allows for straight-forward creation of CIFTI files and the i/o of old ones
 
-Each type of axes is given a unique class:
+Each type of CIFTI axes describing the rows/columns in a CIFTI matrix is given a unique class:
 - `BrainModel`: each row/column is a voxel or vertex
 - `Parcels`: each row/column is a group of voxels and/or vertices
 - `Series`: each row/column is a timepoint, which increases monotonically
@@ -8,14 +8,14 @@ Each type of axes is given a unique class:
 - `Label`: each row/column has a unique name and label table (with optional meta-data)
 All of these classes are derived from `Axis`
 
-IO to and from CIFTI files (through `load` and `save`) expects a matrix as well as a pair of axes objects describing the rows and columns
+IO to and from CIFTI files (through `load` and `save`) expects a matrix as well as a pair of axes objects describing the rows and columns of the matrix
 
 Cifti axes of the same type can be concatenated by adding them together.
-Normal numpy indexing also works on them (except for Series objects, which have to remain monotonically increasing or decreasing)
+Numpy indexing also works on them (except for Series objects, which have to remain monotonically increasing or decreasing)
 
 Installation
 ------------
-This package relies on `nibabel` for reading/writing the CIFTI2 files. For now this io is not even available yet in the nibabel master, so nibabel will have to be installed directly from the port by satra: https://github.com/nipy/nibabel/pull/249
+This package relies on `nibabel` for reading/writing the CIFTI2 files. For now this is not even available yet in the nibabel master, so nibabel will have to be installed directly from the pull request by satra: https://github.com/nipy/nibabel/pull/249
 
 Creating new CIFTI axes
 -----------------------
@@ -36,6 +36,14 @@ These can be concatenated in a single brain model covering the left cortex and t
 >>> bm_full = bm_cortex + bm_thal
 Brain models covering the full HCP grayordinate space can be constructed by adding all the volumetric and surface brain models together like this
 
+Getting a specific brain region from the full brain model is as simple as:
+>>> assert bm_full[bm_full.struc == 'CortexLeft'] == bm_cortex
+>>> assert bm_full[bm_full.struc == 'ThalamusLeft'] == bm_thal
+
+You can also iterate over all brain structures in a brain model:
+>>> for brain_model, structure in bm_full.iter_structures(): ...
+In this case
+
 Parcels are simply sub-selections of these brain models:
 >>> parcel = cifti.Parcels([('surface_parcel', bm_cortex[:100]),  # parcel containing first 100 vertices of the left cortex
                             ('volume_parcel', bm_thal),  # cortex containing the full left thalamus
@@ -43,9 +51,9 @@ Parcels are simply sub-selections of these brain models:
                             ])
 
 Time series are represented by their starting time (typically 0), step size (i.e. TR), and number of elements:
->>> series = cifti.Series(start=0, step=0.1, size=5000)
+>>> series = cifti.Series(start=0, step=100, size=5000)
 
-So fMRI data covering the left cortex and thalamus with 1000 timepoints could be stored with
+So fMRI data with a TR of 100 ms covering the left cortex and thalamus with 5000 timepoints could be stored with
 >>> cifti.save('Lcortex_thal.dtseries.nii', fMRI_data, (series, bm_full))
 
 Similarly the myelin and cortical thickness on the left cortex can be stored in a single Cifti file using

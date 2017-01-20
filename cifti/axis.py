@@ -277,13 +277,11 @@ class BrainModel(Axis):
         """
         Iterates over all brain structures in the order that they appear along the axis
 
-        Returns
-        -------
+        Yields
+        ------
         tuple with
+        - brain model covering a specific brain structure
         - brain structure
-        - boolean indicating whether it is a surface structure
-        - index of the starting point along axis
-        - index of the end point along axis
         """
         idx_current = 0
         while idx_current != self.size:

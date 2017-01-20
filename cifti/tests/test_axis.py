@@ -86,6 +86,8 @@ def test_brain_models():
     assert len(structures) == 4
     for bm, (bm_split, struc) in zip(bml, structures):
         assert bm == bm_split
+        assert bm == bmt[bmt.struc == bm.struc[0]]
+        assert bm == bmt[np.where(bmt.struc == bm.struc[0])]
 
     bmt = bmt + bml[3]
     assert len(bmt) == 18
