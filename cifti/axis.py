@@ -611,7 +611,7 @@ class Label(Axis):
         -------
         Scalar
         """
-        tables = [{key: (value.label.decode(), value.rgba) for key, value in nm.label_table.items()}
+        tables = [{key: (value.label, value.rgba) for key, value in nm.label_table.items()}
                   for nm in mim.named_maps]
         return Scalar.from_mapping(mim).to_label(tables)
 
