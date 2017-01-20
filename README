@@ -42,7 +42,7 @@ Getting a specific brain region from the full brain model is as simple as:
 
 You can also iterate over all brain structures in a brain model:
 >>> for brain_model, structure in bm_full.iter_structures(): ...
-In this case
+In this case there will be two iterations, namely: (bm_cortex, 'CortexLeft') and (bm_thal, 'ThalamusLeft')
 
 Parcels are simply sub-selections of these brain models:
 >>> parcel = cifti.Parcels([('surface_parcel', bm_cortex[:100]),  # parcel containing first 100 vertices of the left cortex
