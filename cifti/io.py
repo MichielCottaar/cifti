@@ -1,5 +1,4 @@
 from . import axis
-import nibabel
 from nibabel import cifti2
 import numpy as np
 
@@ -18,7 +17,8 @@ def load(file):
     tuple with:
     - memory-mapped vector/matrix with the actual data
     - two Axis describing each of the axes
-    The type of the axes will be determined by the information in the CIFTI file itself, not the extension of the CIFTI file
+    The type of the axes will be determined by the information in the CIFTI file itself,
+    not the extension of the CIFTI file
     """
     img = cifti2.Cifti2Image.from_filename(file)
     arr = img.get_data()
@@ -49,5 +49,3 @@ def save(filename, arr, axes):
     """
     img = cifti2.Cifti2Image(np.asarray(arr), axis.to_header(axes))
     img.to_filename(filename)
-
-

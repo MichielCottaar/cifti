@@ -1,4 +1,7 @@
-This module allows for straight-forward creation of CIFTI files and the i/o of old ones
+This module allows for straight-forward creation of CIFTI files and the reading and manipulating of existing ones
+
+The CIFTI format is used in brain imaging to store data acquired across the brain volume (in voxels) and/or the brain surface (in vertices).
+The format is unique in that it can store data from both volume and surface as opposed to NIftI, which only covers the brain volume, and GIftI, which only covers the brain surface.
 
 Each type of CIFTI axes describing the rows/columns in a CIFTI matrix is given a unique class:
 - `BrainModel`: each row/column is a voxel or vertex
@@ -11,7 +14,7 @@ All of these classes are derived from `Axis`
 Reading a CIFTI file (through `load`) will return a matrix and a pair of axes describing the rows and columns of the matrix.
 Similarly to write a CIFTI file (through `save`) requires a matrix and a pair of axes.
 
-Cifti axes of the same type can be concatenated by adding them together.
+CIFTI axes of the same type can be concatenated by adding them together.
 Numpy indexing also works on them (except for Series objects, which have to remain monotonically increasing or decreasing)
 
 Installation
@@ -22,11 +25,11 @@ so nibabel will have to be installed directly from the pull request by satra: ht
 
 Creating new CIFTI axes
 -----------------------
-Several helper functions exist to create new Cifti objects:
+Several helper functions exist to create new CIFTI objects:
 - BrainModel.from_mask creates a new BrainModel volume covering the non-zero values of a mask
 - BrainModel.from_vertex creates a new BrainModel surface covering the provided indices of a surface
-- Scalar.from_names creates a Cifti scalar axis based on a list of names (with no meta-data)
-- Scalar.to_label converts a Cifti scalar axis into a Cifti Label axis given a label table
+- Scalar.from_names creates a CIFTI scalar axis based on a list of names (with no meta-data)
+- Scalar.to_label converts a CIFTI scalar axis into a CIFTI Label axis given a label table
 
 Examples
 --------
@@ -60,10 +63,10 @@ Time series are represented by their starting time (typically 0), step size (i.e
 So fMRI data with a TR of 100 ms covering the left cortex and thalamus with 5000 timepoints could be stored with
 >>> cifti.save('Lcortex_thal.dtseries.nii', fMRI_data, (series, bm_full))
 
-Similarly the curvature and cortical thickness on the left cortex can be stored in a single Cifti file using
+Similarly the curvature and cortical thickness on the left cortex can be stored in a single CIFTI file using
 >>> cifti.save('Lgeometry.dscalar.nii', [curvature, thickness], (cifti.Scalar.from_names(['curvature', 'thickness']), bm_full))
 
-Any Cifti file can be read using
+Any CIFTI file can be read using
 >>> arr, (axis1, axis2) = cifti.load('test_file.nii')
 If the file is not zipped (default for CIFTI) `arr` will be a memory-mapped array, so it should be fast even for a dense connectome.
-If the Cifti file is zipped the full data will be loaded into memory, which might take a long time.
+If the CIFTI file is zipped the full data will be loaded into memory, which might take a long time.
