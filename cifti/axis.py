@@ -283,15 +283,14 @@ class BrainModel(Axis):
         - brain model covering a specific brain structure
         - brain structure
         """
-        idx_current = 0
-        while idx_current != self.size:
-            idx_start = idx_current
-            is_surface = self.arr[idx_start]['surface']
-            struc = self.arr[idx_start]['struc']
-            while (idx_current != self.size and self.arr[idx_current]['struc'] == struc
-                   and self.arr[idx_current]['surface'] == is_surface):
-                idx_current += 1
-            yield self[idx_start: idx_current], struc
+        idx_start = 0
+        start_struc = self.struc[idx_start]
+        for idx_current, struc in enumerate(self.struc):
+            if start_struc != struc:
+                yield self[idx_start: idx_current], start_struc
+                idx_start = idx_current
+                start_struc = self.struc[idx_start]
+        yield self[idx_start: idx_current], start_struc
 
     @property
     def voxel(self, ):
