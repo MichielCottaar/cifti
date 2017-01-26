@@ -290,7 +290,7 @@ class BrainModel(Axis):
                 yield self[idx_start: idx_current], start_struc
                 idx_start = idx_current
                 start_struc = self.struc[idx_start]
-        yield self[idx_start: idx_current], start_struc
+        yield self[idx_start:], start_struc
 
     @property
     def voxel(self, ):
