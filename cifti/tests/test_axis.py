@@ -20,6 +20,10 @@ def brain_models():
     yield axis.BrainModel.from_surface([0, 5, 10], 15, 'CortexLeft')
     yield axis.BrainModel.from_surface([0, 5, 10, 13], 15)
 
+    surface_mask = np.zeros(15, dtype='bool')
+    surface_mask[[2, 9, 14]] = True
+    yield axis.BrainModel.from_mask(surface_mask, brain_structure='CortexRight')
+
 
 def parcels():
     bml = list(brain_models())
@@ -67,6 +71,11 @@ def test_brain_models():
     assert len(bml[3]) == 4
     assert (bml[3].voxel == 0).all()
     assert (bml[3].vertex == [0, 5, 10, 13]).all()
+    print(bml[4][1], bml[4][1][-1].cifti)
+    assert bml[4][1] == (True, 9, 'CortexRight')
+    assert len(bml[4]) == 3
+    assert (bml[4].voxel == 0).all()
+    assert (bml[4].vertex == [2, 9, 14]).all()
 
     for bm, label in zip(bml, ['ThalamusRight', 'Other', 'cortex_left', 'cortex']):
         structures = list(bm.iter_structures())

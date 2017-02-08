@@ -177,7 +177,8 @@ class BrainModel(Axis):
             all non-zero voxels will be included in the BrainModel axis
             should be (Nx, Ny, Nz) array for volume mask or (Nvertex, ) array for surface mask
         affine : np.ndarray
-            (4, 4) array with the voxel to mm transformation (only required for volume masks)
+            (4, 4) array with the voxel to mm transformation (defaults to identity matrix)
+            Argument will be ignored for surface masks
         brain_structure : str
             Name of the brain structure (e.g. 'CortexRight', 'thalamus_left' or 'brain_stem')
 
@@ -185,6 +186,10 @@ class BrainModel(Axis):
         -------
         BrainModel which covers the provided mask
         """
+        if affine is None:
+            affine = np.eye(4)
+        if np.asarray(affine).shape != (4, 4):
+            raise ValueError("Affine transformation should be a 4x4 array or None, not %r" % affine)
         if mask.ndim == 1:
             return cls.from_surface(np.where(mask != 0)[0], mask.size, brain_structure=brain_structure)
         elif mask.ndim == 3:
