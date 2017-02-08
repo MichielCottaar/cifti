@@ -167,7 +167,7 @@ class BrainModel(Axis):
         return cls(arr)
 
     @classmethod
-    def from_mask(cls, mask, affine, brain_structure='other'):
+    def from_mask(cls, mask, affine=None, brain_structure='other'):
         """
         Creates a new BrainModel axis describing the provided mask
 
@@ -175,23 +175,29 @@ class BrainModel(Axis):
         ----------
         mask : np.ndarray
             all non-zero voxels will be included in the BrainModel axis
+            should be (Nx, Ny, Nz) array for volume mask or (Nvertex, ) array for surface mask
         affine : np.ndarray
-            (4, 4) array with the voxel to mm transformation
+            (4, 4) array with the voxel to mm transformation (only required for volume masks)
         brain_structure : str
-            Name of the brain structure (e.g. 'thalamus_left' or 'brain_stem')
+            Name of the brain structure (e.g. 'CortexRight', 'thalamus_left' or 'brain_stem')
 
         Returns
         -------
         BrainModel which covers the provided mask
         """
-        voxels = np.array(np.where(mask != 0)).T
-        arr = np.zeros(len(voxels), dtype=cls._use_dtype)
-        arr['voxel'] = voxels
-        bs = structure.from_string(brain_structure, is_surface=False)
-        bs.affine = affine
-        bs.shape = mask.shape
-        arr['struc'] = bs
-        return cls(arr)
+        if mask.ndim == 1:
+            return cls.from_surface(np.where(mask != 0)[0], mask.size, brain_structure=brain_structure)
+        elif mask.ndim == 3:
+            voxels = np.array(np.where(mask != 0)).T
+            arr = np.zeros(len(voxels), dtype=cls._use_dtype)
+            arr['voxel'] = voxels
+            bs = structure.from_string(brain_structure, is_surface=False)
+            bs.affine = affine
+            bs.shape = mask.shape
+            arr['struc'] = bs
+            return cls(arr)
+        else:
+            raise ValueError("Mask should be either 1-dimensional (for surfaces) or 3-dimensional (for volumes), not %i-dimensional" % mask.ndim)
 
     @classmethod
     def from_surface(cls, vertices, nvertex, brain_structure='Cortex'):
@@ -202,7 +208,7 @@ class BrainModel(Axis):
         ----------
         vertices : np.ndarray
             indices of the vertices on the surface
-        nvertes : int
+        nvertex : int
             total number of vertices on the surface
         brain_structure : str
             Name of the brain structure (e.g. 'CortexLeft' or 'CortexRight')

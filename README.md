@@ -37,8 +37,8 @@ Examples
 So we can create brain models covering the left cortex and left thalamus using:
 ```python
 import cifti
-bm_cortex = cifti.BrainModel.from_vertex(range(32492), nvertex=32492, brain_structure='cortex_left')
-bm_thal = cifti.BrainModel.from_mask(thalamus_mask, affine=affine, structure='thalamus_left')
+bm_cortex = cifti.BrainModel.from_surface(range(32492), nvertex=32492, brain_structure='cortex_left')
+bm_thal = cifti.BrainModel.from_mask(thalamus_mask, affine=affine, brain_structure='thalamus_left')
 ```
 
 These can be concatenated in a single brain model covering the left cortex and thalamus by simply adding them together
