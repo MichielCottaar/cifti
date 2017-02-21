@@ -80,12 +80,12 @@ def test_brain_models():
     for bm, label in zip(bml, ['ThalamusRight', 'Other', 'cortex_left', 'cortex']):
         structures = list(bm.iter_structures())
         assert len(structures) == 1
-        struc = structures[0][0]
-        assert struc == axis.BrainModel.to_cifti_brain_structure_name(label)
-        if 'CORTEX' in struc:
-            assert bm.nvertices[struc] == 15
+        name = structures[0][0]
+        assert name == axis.BrainModel.to_cifti_brain_structure_name(label)
+        if 'CORTEX' in name:
+            assert bm.nvertices[name] == 15
         else:
-            assert struc not in bm.nvertices
+            assert name not in bm.nvertices
             assert (bm.affine == rand_affine).all()
             assert bm.volume_shape == vol_shape
 
@@ -93,7 +93,7 @@ def test_brain_models():
     assert len(bmt) == 14
     structures = list(bmt.iter_structures())
     assert len(structures) == 4
-    for bm, (name, bm_split) in zip(bml, structures):
+    for bm, (name, _, bm_split) in zip(bml, structures):
         assert bm == bm_split
         assert (bm_split.name == name).all()
         assert bm == bmt[bmt.name == bm.name[0]]
@@ -103,7 +103,7 @@ def test_brain_models():
     assert len(bmt) == 18
     structures = list(bmt.iter_structures())
     assert len(structures) == 4
-    assert len(structures[-1][1]) == 8
+    assert len(structures[-1][2]) == 8
 
 
 def test_parcels():

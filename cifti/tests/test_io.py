@@ -27,7 +27,7 @@ def check_hcp_grayordinates(brain_model):
     structures = list(brain_model.iter_structures())
     assert len(structures) == len(hcp_labels)
     idx_start = 0
-    for idx, (name, bm), label, nel in zip(range(len(structures)), structures, hcp_labels, hcp_n_elements):
+    for idx, (name, _, bm), label, nel in zip(range(len(structures)), structures, hcp_labels, hcp_n_elements):
         if idx < 2:
             assert name in bm.nvertices.keys()
             assert (bm.voxel == -1).all()
@@ -46,10 +46,10 @@ def check_hcp_grayordinates(brain_model):
     assert idx_start == len(brain_model)
 
     assert (brain_model.arr[:5]['vertex'] == np.arange(5)).all()
-    assert structures[0][1].vertex[-1] == 32491
-    assert structures[1][1].vertex[0] == 0
-    assert structures[1][1].vertex[-1] == 32491
-    assert (structures[-1][1].arr[-1] == brain_model.arr[-1]).all()
+    assert structures[0][2].vertex[-1] == 32491
+    assert structures[1][2].vertex[0] == 0
+    assert structures[1][2].vertex[-1] == 32491
+    assert (structures[-1][2].arr[-1] == brain_model.arr[-1]).all()
     assert (brain_model.arr[-1]['voxel'] == [38, 55, 46]).all()
     assert (brain_model.arr[70000]['voxel'] == [56, 22, 19]).all()
 
@@ -61,15 +61,15 @@ def check_Conte69(brain_model):
     structures = list(brain_model.iter_structures())
     assert len(structures) == 2
     assert structures[0][0] == 'CIFTI_STRUCTURE_CORTEX_LEFT'
-    assert structures[0][1].is_surface.all()
+    assert structures[0][2].is_surface.all()
     assert structures[1][0] == 'CIFTI_STRUCTURE_CORTEX_RIGHT'
-    assert structures[1][1].is_surface.all()
+    assert structures[1][2].is_surface.all()
     assert (brain_model.voxel == -1).all()
 
     assert (brain_model.arr[:5]['vertex'] == np.arange(5)).all()
-    assert structures[0][1].vertex[-1] == 32491
-    assert structures[1][1].vertex[0] == 0
-    assert structures[1][1].vertex[-1] == 32491
+    assert structures[0][2].vertex[-1] == 32491
+    assert structures[1][2].vertex[0] == 0
+    assert structures[1][2].vertex[-1] == 32491
 
 
 def check_rewrite(arr, axes, extension='.nii'):

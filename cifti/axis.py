@@ -303,7 +303,7 @@ class BrainModel(Axis):
         cifti2.Cifti2MatrixIndicesMap
         """
         mim = cifti2.Cifti2MatrixIndicesMap([dim], 'CIFTI_INDEX_TYPE_BRAIN_MODELS')
-        for name, bm in self.iter_structures():
+        for name, to_slice, bm in self.iter_structures():
             is_surface = name in self.nvertices.keys()
             if is_surface:
                 voxels = None
@@ -316,8 +316,7 @@ class BrainModel(Axis):
                 if mim.volume is None:
                     affine = cifti2.Cifti2TransformationMatrixVoxelIndicesIJKtoXYZ(-3, matrix=self.affine)
                     mim.volume = cifti2.Cifti2Volume(self.volume_shape, affine)
-            idx_start = np.where(self.name == name)[0].min()
-            cifti_bm = cifti2.Cifti2BrainModel(idx_start, len(bm),
+            cifti_bm = cifti2.Cifti2BrainModel(to_slice.start, len(bm),
                                                'CIFTI_MODEL_TYPE_SURFACE' if is_surface else 'CIFTI_MODEL_TYPE_VOXELS',
                                                name, nsurf, voxels, vertices)
             mim.append(cifti_bm)
@@ -331,16 +330,17 @@ class BrainModel(Axis):
         ------
         tuple with
         - CIFTI brain structure name
+        - slice to select the data associated with the brain structure from the tensor
         - brain model covering that specific brain structure
         """
         idx_start = 0
         start_name = self.name[idx_start]
         for idx_current, name in enumerate(self.name):
             if start_name != name:
-                yield start_name, self[idx_start: idx_current]
+                yield start_name, slice(idx_start, idx_current), self[idx_start: idx_current]
                 idx_start = idx_current
                 start_name = self.name[idx_start]
-        yield start_name, self[idx_start:]
+        yield start_name, slice(idx_start, None), self[idx_start:]
 
     @property
     def affine(self, ):
@@ -564,7 +564,7 @@ class Parcels(Axis):
                     if (affine != bm.affine).any() or (volume_shape != bm.volume_shape):
                         raise ValueError("Can not combine brain models defined in different volumes into a single Parcel axis")
             vertices = {}
-            for name, bm_part in bm.iter_structures():
+            for name, _, bm_part in bm.iter_structures():
                 if name in bm.nvertices.keys():
                     if name in nvertices.keys() and nvertices[name] != bm.nvertices[name]:
                         raise ValueError("Got multiple conflicting number of vertices for surface structure %s" % name)
