@@ -27,29 +27,29 @@ def check_hcp_grayordinates(brain_model):
     structures = list(brain_model.iter_structures())
     assert len(structures) == len(hcp_labels)
     idx_start = 0
-    for idx, (bm, struc), label, nel in zip(range(len(structures)), structures, hcp_labels, hcp_n_elements):
+    for idx, (name, bm), label, nel in zip(range(len(structures)), structures, hcp_labels, hcp_n_elements):
         if idx < 2:
-            assert struc.model_type == 'surface'
-            assert (bm.voxel == 0).all()
-            assert (bm.vertex != 0).any()
-            assert struc.nvertex == 32492
+            assert name in bm.nvertices.keys()
+            assert (bm.voxel == -1).all()
+            assert (bm.vertex != -1).any()
+            assert bm.nvertices[name] == 32492
         else:
-            assert struc.model_type == 'volume'
-            assert (bm.voxel != 0).any()
-            assert (bm.vertex == 0).all()
-            assert (struc.affine == hcp_affine).all()
-            assert struc.shape == (91, 109, 91)
-        assert struc == label
+            assert name not in bm.nvertices.keys()
+            assert (bm.voxel != -1).any()
+            assert (bm.vertex == -1).all()
+            assert (bm.affine == hcp_affine).all()
+            assert bm.volume_shape == (91, 109, 91)
+        assert name == axis.BrainModel.to_cifti_brain_structure_name(label)
         assert len(bm) == nel
         assert (bm.arr == brain_model.arr[idx_start:idx_start + nel]).all()
         idx_start += nel
     assert idx_start == len(brain_model)
 
     assert (brain_model.arr[:5]['vertex'] == np.arange(5)).all()
-    assert structures[0][0].vertex[-1] == 32491
-    assert structures[1][0].vertex[0] == 0
-    assert structures[1][0].vertex[-1] == 32491
-    assert (structures[-1][0].arr[-1] == brain_model.arr[-1]).all()
+    assert structures[0][1].vertex[-1] == 32491
+    assert structures[1][1].vertex[0] == 0
+    assert structures[1][1].vertex[-1] == 32491
+    assert (structures[-1][1].arr[-1] == brain_model.arr[-1]).all()
     assert (brain_model.arr[-1]['voxel'] == [38, 55, 46]).all()
     assert (brain_model.arr[70000]['voxel'] == [56, 22, 19]).all()
 
@@ -60,16 +60,16 @@ def check_Conte69(brain_model):
     assert isinstance(brain_model, axis.BrainModel)
     structures = list(brain_model.iter_structures())
     assert len(structures) == 2
-    assert structures[0][1] == 'CortexLeft'
-    assert structures[0][1].model_type == 'surface'
-    assert structures[1][1] == 'CortexRight'
-    assert structures[1][1].model_type == 'surface'
-    assert (brain_model.voxel == 0).all()
+    assert structures[0][0] == 'CIFTI_STRUCTURE_CORTEX_LEFT'
+    assert structures[0][1].is_surface.all()
+    assert structures[1][0] == 'CIFTI_STRUCTURE_CORTEX_RIGHT'
+    assert structures[1][1].is_surface.all()
+    assert (brain_model.voxel == -1).all()
 
     assert (brain_model.arr[:5]['vertex'] == np.arange(5)).all()
-    assert structures[0][0].vertex[-1] == 32491
-    assert structures[1][0].vertex[0] == 0
-    assert structures[1][0].vertex[-1] == 32491
+    assert structures[0][1].vertex[-1] == 32491
+    assert structures[1][1].vertex[0] == 0
+    assert structures[1][1].vertex[-1] == 32491
 
 
 def check_rewrite(arr, axes, extension='.nii'):
@@ -143,12 +143,9 @@ def test_read_conte69_ptseries():
     assert (axes[0].arr == [0, 1]).all()
 
     assert len(axes[1]) == 54
-    parcel = axes[1]['ER_FRB08']
-    assert len(parcel) == 206
-    structures = list(parcel.iter_structures())
-    assert len(structures) == 2
-    assert len(structures[0][0]) == 206 // 2
-    assert structures[0][1] == 'CortexLeft'
-    assert len(structures[1][0]) == 206 // 2
-    assert structures[1][1] == 'CortexRight'
+    voxels, vertices = axes[1]['ER_FRB08']
+    assert voxels.shape == (0, 3)
+    assert len(vertices) == 2
+    assert vertices['CIFTI_STRUCTURE_CORTEX_LEFT'].shape == (206 // 2, )
+    assert vertices['CIFTI_STRUCTURE_CORTEX_RIGHT'].shape == (206 // 2, )
     check_rewrite(arr, axes)

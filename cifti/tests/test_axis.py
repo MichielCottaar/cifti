@@ -27,7 +27,7 @@ def brain_models():
 
 def parcels():
     bml = list(brain_models())
-    return axis.Parcels([('mixed', bml[0] + bml[2]), ('volume', bml[1]), ('surface', bml[3])])
+    return axis.Parcels.from_brain_models([('mixed', bml[0] + bml[2]), ('volume', bml[1]), ('surface', bml[3])])
 
 
 def scalar():
@@ -56,61 +56,69 @@ def axes():
 def test_brain_models():
     bml = list(brain_models())
     assert len(bml[0]) == 3
-    assert (bml[0].vertex == 0).all()
+    assert (bml[0].vertex == -1).all()
     assert (bml[0].voxel == [[0, 1, 2], [0, 4, 0], [0, 4, 2]]).all()
     assert bml[0][1][0] == False
     assert (bml[0][1][1] == [0, 4, 0]).all()
-    assert bml[0][1][2] == 'thalamus_right'
+    assert bml[0][1][2] == axis.BrainModel.to_cifti_brain_structure_name('thalamus_right')
     assert len(bml[1]) == 4
-    assert (bml[1].vertex == 0).all()
+    assert (bml[1].vertex == -1).all()
     assert (bml[1].voxel == [[0, 0, 0], [0, 1, 2], [0, 4, 0], [0, 4, 2]]).all()
     assert len(bml[2]) == 3
-    assert (bml[2].voxel == 0).all()
+    assert (bml[2].voxel == -1).all()
     assert (bml[2].vertex == [0, 5, 10]).all()
-    assert bml[2][1] == (True, 5, 'CortexLeft')
+    assert bml[2][1] == (True, 5, 'CIFTI_STRUCTURE_CORTEX_LEFT')
     assert len(bml[3]) == 4
-    assert (bml[3].voxel == 0).all()
+    assert (bml[3].voxel == -1).all()
     assert (bml[3].vertex == [0, 5, 10, 13]).all()
-    print(bml[4][1], bml[4][1][-1].cifti)
-    assert bml[4][1] == (True, 9, 'CortexRight')
+    print(bml[4][1], bml[4][1][-1])
+    assert bml[4][1] == (True, 9, 'CIFTI_STRUCTURE_CORTEX_RIGHT')
     assert len(bml[4]) == 3
-    assert (bml[4].voxel == 0).all()
+    assert (bml[4].voxel == -1).all()
     assert (bml[4].vertex == [2, 9, 14]).all()
 
     for bm, label in zip(bml, ['ThalamusRight', 'Other', 'cortex_left', 'cortex']):
         structures = list(bm.iter_structures())
         assert len(structures) == 1
-        struc = structures[0][1]
-        assert struc == label
-        if struc.model_type == 'surface':
-            assert struc.nvertex == 15
+        struc = structures[0][0]
+        assert struc == axis.BrainModel.to_cifti_brain_structure_name(label)
+        if 'CORTEX' in struc:
+            assert bm.nvertices[struc] == 15
         else:
-            assert struc.model_type == 'volume'
-            assert (struc.affine == rand_affine).all()
-            assert struc.shape == vol_shape
+            assert struc not in bm.nvertices
+            assert (bm.affine == rand_affine).all()
+            assert bm.volume_shape == vol_shape
 
     bmt = bml[0] + bml[1] + bml[2] + bml[3]
     assert len(bmt) == 14
     structures = list(bmt.iter_structures())
     assert len(structures) == 4
-    for bm, (bm_split, struc) in zip(bml, structures):
+    for bm, (name, bm_split) in zip(bml, structures):
         assert bm == bm_split
-        assert bm == bmt[bmt.struc == bm.struc[0]]
-        assert bm == bmt[np.where(bmt.struc == bm.struc[0])]
+        assert (bm_split.name == name).all()
+        assert bm == bmt[bmt.name == bm.name[0]]
+        assert bm == bmt[np.where(bmt.name == bm.name[0])]
 
     bmt = bmt + bml[3]
     assert len(bmt) == 18
     structures = list(bmt.iter_structures())
     assert len(structures) == 4
-    assert len(structures[-1][0]) == 8
+    assert len(structures[-1][1]) == 8
 
 
 def test_parcels():
     prc = parcels()
     assert isinstance(prc, axis.Parcels)
-    assert len(prc['mixed']) == 6
-    assert len(prc['volume']) == 4
-    assert len(prc['surface']) == 4
+    assert prc['mixed'][0].shape == (3, 3)
+    assert len(prc['mixed'][1]) == 1
+    assert prc['mixed'][1]['CIFTI_STRUCTURE_CORTEX_LEFT'].shape == (3, )
+
+    assert prc['volume'][0].shape == (4, 3)
+    assert len(prc['volume'][1]) == 0
+
+    assert prc['surface'][0].shape == (0, 3)
+    assert len(prc['surface'][1]) == 1
+    assert prc['surface'][1]['CIFTI_STRUCTURE_CORTEX'].shape == (4, )
 
 
 def test_scalar():
@@ -151,4 +159,5 @@ def test_writing():
     for ax1 in axes():
         for ax2 in axes():
             arr = np.random.randn(len(ax1), len(ax2))
+            print(ax1, ax2)
             check_rewrite(arr, (ax1, ax2))

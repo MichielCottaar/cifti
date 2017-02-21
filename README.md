@@ -37,9 +37,10 @@ Examples
 So we can create brain models covering the left cortex and left thalamus using:
 ```python
 import cifti
-bm_cortex = cifti.BrainModel.from_surface(range(32492), nvertex=32492, brain_structure='cortex_left')
+bm_cortex = cifti.BrainModel.from_mask(cortex_mask, brain_structure='cortex_left')
 bm_thal = cifti.BrainModel.from_mask(thalamus_mask, affine=affine, brain_structure='thalamus_left')
 ```
+A 1-dimensional mask will be automatically interpreted as a surface element and a 3-dimensional mask as a volume element.
 
 These can be concatenated in a single brain model covering the left cortex and thalamus by simply adding them together
 ```python
@@ -60,15 +61,15 @@ for brain_model, structure in bm_full.iter_structures(): ...
 ```
 In this case there will be two iterations, namely: (bm_cortex, 'CortexLeft') and (bm_thal, 'ThalamusLeft')
 
-Parcels are simply sub-selections of these brain models:
+Parcels can be constructed from selections of these brain models:
 ```python
-parcel = cifti.Parcels([('surface_parcel', bm_cortex[:100]),  # parcel containing first 100 vertices of the left cortex
-                            ('volume_parcel', bm_thal),  # parcel containing the full left thalamus
-                            ('combined_parcel', bm_full[[1, 8, 10, 19, 50, 120, 127])  # parcel containing specific indices of the full brain model
-                            ])
+parcel = cifti.Parcels.from_brain_models([('surface_parcel', bm_cortex[:100]),  # parcel containing first 100 vertices of the left cortex
+                                          ('volume_parcel', bm_thal),  # parcel containing the full left thalamus
+                                          ('combined_parcel', bm_full[[1, 8, 10, 19, 50, 120, 127])  # parcel containing specific indices of the full brain model
+                                         ])
 ```
 
-Time series are represented by their starting time (typically 0), step size (i.e. sampling time, TR), and number of elements:
+Time series are represented by their starting time (typically 0), step size (i.e. sampling time or TR), and number of elements:
 ```python
 series = cifti.Series(start=0, step=100, size=5000)
 ```
