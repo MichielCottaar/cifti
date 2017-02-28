@@ -22,7 +22,7 @@ def brain_models():
 
     surface_mask = np.zeros(15, dtype='bool')
     surface_mask[[2, 9, 14]] = True
-    yield axis.BrainModel.from_mask(surface_mask, brain_structure='CortexRight')
+    yield axis.BrainModel.from_mask(surface_mask, name='CortexRight')
 
 
 def parcels():

@@ -209,7 +209,7 @@ class BrainModel(Axis):
         return cls(arr, affine, shape, nvertices)
 
     @classmethod
-    def from_mask(cls, mask, affine=None, brain_structure='other'):
+    def from_mask(cls, mask, affine=None, name='other'):
         """
         Creates a new BrainModel axis describing the provided mask
 
@@ -221,7 +221,7 @@ class BrainModel(Axis):
         affine : np.ndarray
             (4, 4) array with the voxel to mm transformation (defaults to identity matrix)
             Argument will be ignored for surface masks
-        brain_structure : str
+        name : str
             Name of the brain structure (e.g. 'CortexRight', 'thalamus_left' or 'brain_stem')
 
         Returns
@@ -233,19 +233,19 @@ class BrainModel(Axis):
         if np.asarray(affine).shape != (4, 4):
             raise ValueError("Affine transformation should be a 4x4 array or None, not %r" % affine)
         if mask.ndim == 1:
-            return cls.from_surface(np.where(mask != 0)[0], mask.size, brain_structure=brain_structure)
+            return cls.from_surface(np.where(mask != 0)[0], mask.size, name=name)
         elif mask.ndim == 3:
             voxels = np.array(np.where(mask != 0)).T
             arr = np.zeros(len(voxels), dtype=cls._use_dtype)
             arr['vertex'] = -1
             arr['voxel'] = voxels
-            arr['name'] = cls.to_cifti_brain_structure_name(brain_structure)
+            arr['name'] = cls.to_cifti_brain_structure_name(name)
             return cls(arr, affine=affine, volume_shape=mask.shape)
         else:
             raise ValueError("Mask should be either 1-dimensional (for surfaces) or 3-dimensional (for volumes), not %i-dimensional" % mask.ndim)
 
     @classmethod
-    def from_surface(cls, vertices, nvertex, brain_structure='Cortex'):
+    def from_surface(cls, vertices, nvertex, name='Cortex'):
         """
         Creates a new BrainModel axis describing the vertices on a surface
 
@@ -255,7 +255,7 @@ class BrainModel(Axis):
             indices of the vertices on the surface
         nvertex : int
             total number of vertices on the surface
-        brain_structure : str
+        name : str
             Name of the brain structure (e.g. 'CortexLeft' or 'CortexRight')
 
         Returns
@@ -265,7 +265,7 @@ class BrainModel(Axis):
         arr = np.zeros(len(vertices), dtype=cls._use_dtype)
         arr['voxel'] = -1
         arr['vertex'] = vertices
-        arr['name'] = cls.to_cifti_brain_structure_name(brain_structure)
+        arr['name'] = cls.to_cifti_brain_structure_name(name)
         return cls(arr, nvertices={arr['name'][0]: nvertex})
 
     def get_element(self, index):
