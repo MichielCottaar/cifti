@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='cifti',
-      version='0.1',
+      version='1.0',
       description='Interface to handle CIFTI files',
       author='Michiel Cottaar',
       author_email='Michiel.Cottaar@ndcn.ox.ac.uk',
