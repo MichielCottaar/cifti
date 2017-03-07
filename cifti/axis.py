@@ -209,7 +209,7 @@ class BrainModel(Axis):
         return cls(arr, affine, shape, nvertices)
 
     @classmethod
-    def from_mask(cls, mask, affine=None, name='other'):
+    def from_mask(cls, mask, name='other', affine=None):
         """
         Creates a new BrainModel axis describing the provided mask
 
@@ -218,11 +218,11 @@ class BrainModel(Axis):
         mask : np.ndarray
             all non-zero voxels will be included in the BrainModel axis
             should be (Nx, Ny, Nz) array for volume mask or (Nvertex, ) array for surface mask
+        name : str
+            Name of the brain structure (e.g. 'CortexRight', 'thalamus_left' or 'brain_stem')
         affine : np.ndarray
             (4, 4) array with the voxel to mm transformation (defaults to identity matrix)
             Argument will be ignored for surface masks
-        name : str
-            Name of the brain structure (e.g. 'CortexRight', 'thalamus_left' or 'brain_stem')
 
         Returns
         -------

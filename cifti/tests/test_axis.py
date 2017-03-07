@@ -13,9 +13,9 @@ def brain_models():
     mask[0, 1, 2] = 1
     mask[0, 4, 2] = True
     mask[0, 4, 0] = True
-    yield axis.BrainModel.from_mask(mask, rand_affine, 'ThalamusRight')
+    yield axis.BrainModel.from_mask(mask, 'ThalamusRight', rand_affine)
     mask[0, 0, 0] = True
-    yield axis.BrainModel.from_mask(mask, rand_affine)
+    yield axis.BrainModel.from_mask(mask, affine=rand_affine)
 
     yield axis.BrainModel.from_surface([0, 5, 10], 15, 'CortexLeft')
     yield axis.BrainModel.from_surface([0, 5, 10, 13], 15)
