@@ -1,7 +1,8 @@
 This module allows for straight-forward creation of CIFTI files and the reading and manipulating of existing ones
 
-The CIFTI format is used in brain imaging to store data acquired across the brain volume (in voxels) and/or the brain surface (in vertices).
-The format is unique in that it can store data from both volume and surface as opposed to NIftI, which only covers the brain volume, and GIftI, which only covers the brain surface.
+The CIFTI format is used in brain imaging to store data acquired across the brain volume (in voxels) and/or 
+the brain surface (in vertices). The format is unique in that it can store data from both volume and 
+surface as opposed to NIftI, which only covers the brain volume, and GIftI, which only covers the brain surface. 
 See http://www.nitrc.org/projects/cifti for specification of the CIFTI format.
 
 Each type of CIFTI axes describing the rows/columns in a CIFTI matrix is given a unique class:
@@ -12,16 +13,16 @@ Each type of CIFTI axes describing the rows/columns in a CIFTI matrix is given a
 - `Label`: each row/column has a unique name and label table (with optional meta-data)
 All of these classes are derived from `Axis`
 
-Reading a CIFTI file (through `read`) will return a matrix and a pair of axes describing the rows and columns of the matrix.
+Reading a CIFTI file (through `read`) will return a matrix and a pair of axes describing the rows and columns of the matrix. 
 Similarly to write a CIFTI file (through `write`) requires a matrix and a pair of axes.
 
-CIFTI axes of the same type can be concatenated by adding them together.
+CIFTI axes of the same type can be concatenated by adding them together. 
 Numpy indexing also works on them (except for Series objects, which have to remain monotonically increasing or decreasing)
 
 Installation
 ------------
-This package relies on `nibabel` for reading/writing the CIFTI2 files. For now this is not even available yet in the nibabel master,
-so nibabel will have to be installed directly from the pull request by satra: https://github.com/nipy/nibabel/pull/249
+This package requires the latest, as yet unreleased, version of nibabel. 
+The master branch can be downloaded from https://github.com/nipy/nibabel.
 
 
 Creating new CIFTI axes
@@ -46,8 +47,8 @@ These can be concatenated in a single brain model covering the left cortex and t
 ```python
 bm_full = bm_cortex + bm_thal
 ```
-Brain models covering the full HCP grayordinate space can be constructed by adding all the volumetric and surface brain models together like this
-(or by reading one from an already existing HCP file)
+Brain models covering the full HCP grayordinate space can be constructed by adding all the volumetric and 
+surface brain models together like this (or by reading one from an already existing HCP file)
 
 Getting a specific brain region from the full brain model is as simple as:
 ```python
@@ -88,5 +89,5 @@ Any CIFTI file can be read using
 ```python
 arr, (axis1, axis2) = cifti.read('test_file.nii')
 ```
-If the file is not zipped (default for CIFTI) `arr` will be a memory-mapped array, so it should be fast even for a dense connectome.
+If the file is not zipped (default for CIFTI) `arr` will be a memory-mapped array, so it should be fast even for a dense connectome. 
 If the CIFTI file is zipped the full data will be loaded into memory, which might take a long time.
