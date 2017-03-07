@@ -87,7 +87,7 @@ cifti.write('Lgeometry.dscalar.nii', [curvature, thickness], (cifti.Scalar.from_
 
 Any CIFTI file can be read using
 ```python
-arr, (axis1, axis2) = cifti.read('test_file.nii')
+arr, (axis1, axis2, ...) = cifti.read('test_file.nii')
 ```
 If the file is not zipped (default for CIFTI) `arr` will be a memory-mapped array, so it should be fast even for a dense connectome. 
 If the CIFTI file is zipped the full data will be loaded into memory, which might take a long time.

@@ -136,6 +136,8 @@ class BrainModel(Axis):
     """
     _use_dtype = np.dtype([('vertex', 'i4'), ('voxel', ('i4', 3)),
                            ('name', 'U%i' % max(len(name) for name in cifti2.CIFTI_BRAIN_STRUCTURES))])
+    _affine = None
+    _volume_shape = None
 
     def __init__(self, arr, affine=None, volume_shape=None, nvertices=None):
         """
@@ -243,7 +245,8 @@ class BrainModel(Axis):
             arr['name'] = cls.to_cifti_brain_structure_name(name)
             return cls(arr, affine=affine, volume_shape=mask.shape)
         else:
-            raise ValueError("Mask should be either 1-dimensional (for surfaces) or 3-dimensional (for volumes), not %i-dimensional" % mask.ndim)
+            raise ValueError("Mask should be either 1-dimensional (for surfaces) or "
+                             "3-dimensional (for volumes), not %i-dimensional" % mask.ndim)
 
     @classmethod
     def from_surface(cls, vertices, nvertex, name='Cortex'):
@@ -309,17 +312,17 @@ class BrainModel(Axis):
             if is_surface:
                 voxels = None
                 vertices = cifti2.Cifti2VertexIndices(bm.vertex)
-                nsurf = self.nvertices[name]
+                nvertex = self.nvertices[name]
             else:
                 voxels = cifti2.Cifti2VoxelIndicesIJK(bm.voxel)
                 vertices = None
-                nsurf = None
+                nvertex = None
                 if mim.volume is None:
                     affine = cifti2.Cifti2TransformationMatrixVoxelIndicesIJKtoXYZ(-3, matrix=self.affine)
                     mim.volume = cifti2.Cifti2Volume(self.volume_shape, affine)
             cifti_bm = cifti2.Cifti2BrainModel(to_slice.start, len(bm),
                                                'CIFTI_MODEL_TYPE_SURFACE' if is_surface else 'CIFTI_MODEL_TYPE_VOXELS',
-                                               name, nsurf, voxels, vertices)
+                                               name, nvertex, voxels, vertices)
             mim.append(cifti_bm)
         return mim
 
@@ -458,8 +461,8 @@ class BrainModel(Axis):
         if xor(self.affine is None, other.affine is None):
             return False
         return (((self.affine is None and other.affine is None) or
-                    (abs(self.affine - other.affine).max() < 1e-8 and
-                     self.volume_shape == other.volume_shape)) and
+                 (abs(self.affine - other.affine).max() < 1e-8 and
+                  self.volume_shape == other.volume_shape)) and
                 (self.nvertices == other.nvertices) and
                 (self.arr == other.arr).all())
 
@@ -482,7 +485,7 @@ class BrainModel(Axis):
             else:
                 affine, shape = self.affine, self.volume_shape
                 if other.affine is not None and ((other.affine != affine).all() or
-                                                 other.volume_shape != shape):
+                                                  other.volume_shape != shape):
                     raise ValueError("Trying to concatenate two BrainModels defined in a different brain volume")
             nvertices = dict(self.nvertices)
             for name, value in other.nvertices.items():
@@ -511,6 +514,8 @@ class Parcels(Axis):
     >>> parcel = parcel_axis[name]
     """
     _use_dtype = np.dtype([('name', 'U60'), ('voxels', 'object'), ('vertices', 'object')])
+    _affine = None
+    _volume_shape = None
 
     def __init__(self, arr, affine=None, volume_shape=None, nvertices=None):
         """
@@ -564,7 +569,8 @@ class Parcels(Axis):
                     volume_shape = bm.volume_shape
                 else:
                     if (affine != bm.affine).any() or (volume_shape != bm.volume_shape):
-                        raise ValueError("Can not combine brain models defined in different volumes into a single Parcel axis")
+                        raise ValueError(
+                            "Can not combine brain models defined in different volumes into a single Parcel axis")
             vertices = {}
             for name, _, bm_part in bm.iter_structures():
                 if name in bm.nvertices.keys():
@@ -719,16 +725,14 @@ class Parcels(Axis):
         return type(self)(self.arr[item], self.affine, self.volume_shape, self.nvertices)
 
     def __eq__(self, other):
-        if (  type(self) != type(other) or
-              len(self) != len(other) or
-              (self.name != other.name).all() or
-              self.nvertices != other.nvertices or
-              any((vox1 != vox2).any() for vox1, vox2 in zip(self.voxels, other.voxels))):
+        if (type(self) != type(other) or len(self) != len(other) or
+                (self.name != other.name).all() or self.nvertices != other.nvertices or
+                any((vox1 != vox2).any() for vox1, vox2 in zip(self.voxels, other.voxels))):
             return False
         if self.affine is not None:
-            if (other.affine is None or
-                        abs(self.affine - other.affine).max() > 1e-8 or
-                        self.volume_shape != other.volume_shape):
+            if (  other.affine is None or
+                  abs(self.affine - other.affine).max() > 1e-8 or
+                  self.volume_shape != other.volume_shape):
                 return False
         elif other.affine is not None:
             return False
@@ -759,7 +763,7 @@ class Parcels(Axis):
             else:
                 affine, shape = self.affine, self.volume_shape
                 if other.affine is not None and ((other.affine != affine).all() or
-                                                         other.volume_shape != shape):
+                                                  other.volume_shape != shape):
                     raise ValueError("Trying to concatenate two Parcels defined in a different brain volume")
             nvertices = dict(self.nvertices)
             for name, value in other.nvertices.items():
@@ -769,6 +773,7 @@ class Parcels(Axis):
                 nvertices[name] = value
             return type(self)(np.append(self.arr, other.arr), affine, shape, nvertices)
         return NotImplemented
+
 
 class Scalar(Axis):
     """
@@ -967,7 +972,7 @@ class Label(Axis):
         for elem in self.arr:
             label_table = cifti2.Cifti2LabelTable()
             for key, value in elem['label'].items():
-                label_table[key] = (value[0], ) + tuple(value[1])
+                label_table[key] = (value[0],) + tuple(value[1])
             meta = None if len(elem['meta']) == 0 else elem['meta']
             named_map = cifti2.Cifti2NamedMap(elem['name'], cifti2.Cifti2MetaData(meta),
                                               label_table)
