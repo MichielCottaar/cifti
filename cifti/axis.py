@@ -116,6 +116,7 @@ class Axis(object):
         """
         if type(self) == type(other):
             return type(self)(np.append(self.arr, other.arr))
+        return NotImplemented
 
 
 class BrainModel(Axis):
@@ -490,6 +491,7 @@ class BrainModel(Axis):
                                      % name)
                 nvertices[name] = value
             return type(self)(np.append(self.arr, other.arr), affine, shape, nvertices)
+        return NotImplemented
 
 
 class Parcels(Axis):
@@ -710,7 +712,11 @@ class Parcels(Axis):
             if len(idx) > 1:
                 raise IndexError("Multiple parcels with name %s found" % item)
             return self.voxels[idx[0]], self.vertices[idx[0]]
-        super(Parcels, self).__getitem__(item)
+        if isinstance(item, int):
+            return self.get_element(item)
+        if isinstance(item, string_types):
+            raise IndexError("Can not index an Axis with a string (except for Parcels)")
+        return type(self)(self.arr[item], self.affine, self.volume_shape, self.nvertices)
 
     def __eq__(self, other):
         if (  type(self) != type(other) or
@@ -734,6 +740,35 @@ class Parcels(Axis):
                     return False
         return True
 
+    def __add__(self, other):
+        """
+        Concatenates two Parcels
+
+        Parameters
+        ----------
+        other : Parcel
+            parcel to be appended to the current one
+
+        Returns
+        -------
+        Parcel
+        """
+        if type(self) == type(other):
+            if self.affine is None:
+                affine, shape = other.affine, other.volume_shape
+            else:
+                affine, shape = self.affine, self.volume_shape
+                if other.affine is not None and ((other.affine != affine).all() or
+                                                         other.volume_shape != shape):
+                    raise ValueError("Trying to concatenate two Parcels defined in a different brain volume")
+            nvertices = dict(self.nvertices)
+            for name, value in other.nvertices.items():
+                if name in nvertices.keys() and nvertices[name] != value:
+                    raise ValueError("Trying to concatenate two Parcels with inconsistent number of vertices for %s"
+                                     % name)
+                nvertices[name] = value
+            return type(self)(np.append(self.arr, other.arr), affine, shape, nvertices)
+        return NotImplemented
 
 class Scalar(Axis):
     """

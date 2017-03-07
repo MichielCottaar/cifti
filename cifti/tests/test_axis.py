@@ -120,6 +120,18 @@ def test_parcels():
     assert len(prc['surface'][1]) == 1
     assert prc['surface'][1]['CIFTI_STRUCTURE_CORTEX'].shape == (4, )
 
+    prc2 = prc + prc
+    assert len(prc2) == 6
+    assert (prc2.affine == prc.affine).all()
+    assert (prc2.nvertices == prc.nvertices)
+    assert (prc2.volume_shape == prc.volume_shape)
+    assert prc2[:3] == prc
+    assert prc2[3:] == prc
+
+    assert prc2[3:]['mixed'][0].shape == (3, 3)
+    assert len(prc2[3:]['mixed'][1]) == 1
+    assert prc2[3:]['mixed'][1]['CIFTI_STRUCTURE_CORTEX_LEFT'].shape == (3, )
+
 
 def test_scalar():
     sc = scalar()
@@ -127,6 +139,11 @@ def test_scalar():
     assert isinstance(sc, axis.Scalar)
     assert (sc.name == ['one', 'two', 'three']).all()
     assert sc[1] == ('two', {})
+    sc2 = sc + sc
+    assert len(sc2) == 6
+    assert (sc2.name == ['one', 'two', 'three', 'one', 'two', 'three']).all()
+    assert sc2[:3] == sc
+    assert sc2[3:] == sc
 
 
 def test_series():
