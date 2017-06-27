@@ -41,6 +41,7 @@ def series():
     yield axis.Series(3, 10, 4)
     yield axis.Series(8, 10, 3)
     yield axis.Series(3, 2, 4)
+    yield axis.Series(5, 10, 5, "HERTZ")
 
 
 def axes():
@@ -148,6 +149,11 @@ def test_scalar():
 
 def test_series():
     sr = list(series())
+    assert sr[0].unit == 'SECOND'
+    assert sr[1].unit == 'SECOND'
+    assert sr[2].unit == 'SECOND'
+    assert sr[3].unit == 'HERTZ'
+
     assert (sr[0].arr == np.arange(4) * 10 + 3).all()
     assert (sr[1].arr == np.arange(3) * 10 + 8).all()
     assert (sr[2].arr == np.arange(4) * 2 + 3).all()
@@ -158,6 +164,9 @@ def test_series():
     assert sr[1][-2] == sr[1].arr[-2]
     assert_raises(ValueError, lambda: sr[0] + sr[2])
     assert_raises(ValueError, lambda: sr[2] + sr[1])
+    assert_raises(ValueError, lambda: sr[0] + sr[3])
+    assert_raises(ValueError, lambda: sr[3] + sr[1])
+    assert_raises(ValueError, lambda: sr[3] + sr[2])
 
     # test slicing
     assert (sr[0][1:3].arr == sr[0].arr[1:3]).all()

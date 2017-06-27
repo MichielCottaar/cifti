@@ -1038,8 +1038,9 @@ class Series(Axis):
         number of time points
     """
     size = None
+    _unit = None
 
-    def __init__(self, start, step, size):
+    def __init__(self, start, step, size, unit="SECOND"):
         """
         Creates a new Series axis
 
@@ -1051,10 +1052,23 @@ class Series(Axis):
             Step size between data points
         size : int
             Number of data points
+        unit : str
+            Unit of the step size (one of 'second', 'hertz', 'meter', or 'radian')
         """
+        self.unit = unit
         self.start = start
         self.step = step
         self.size = size
+
+    @property
+    def unit(self, ):
+        return self._unit
+
+    @unit.setter
+    def unit(self, value):
+        if value.upper() not in ("SECOND", "HERTZ", "METER", "RADIAN"):
+            raise ValueError("Series unit should be one of ('second', 'hertz', 'meter', or 'radian'")
+        self._unit = value.upper()
 
     @property
     def arr(self, ):
@@ -1075,7 +1089,7 @@ class Series(Axis):
         """
         start = mim.series_start * 10 ** mim.series_exponent
         step = mim.series_step * 10 ** mim.series_exponent
-        return cls(start, step, mim.number_of_series_points)
+        return cls(start, step, mim.number_of_series_points, mim.series_unit)
 
     def to_mapping(self, dim):
         """
@@ -1095,6 +1109,7 @@ class Series(Axis):
         mim.series_start = self.start
         mim.series_step = self.step
         mim.number_of_series_points = self.size
+        mim.series_unit = self.unit
         return mim
 
     def extend(self, other_axis):
@@ -1114,7 +1129,9 @@ class Series(Axis):
         """
         if other_axis.step != self.step:
             raise ValueError('Can only concatenate series with the same step size')
-        return Series(self.start, self.step, self.size + other_axis.size)
+        if other_axis.unit != self.unit:
+            raise ValueError('Can only concatenate series with the same unit')
+        return Series(self.start, self.step, self.size + other_axis.size, self.unit)
 
     def __getitem__(self, item):
         if isinstance(item, slice):
