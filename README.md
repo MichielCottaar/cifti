@@ -27,8 +27,8 @@ pip install git+https://github.com/MichielCottaar/cifti.git
 ```
 
 Alternatively after downloading the package it can be installed by running the following in the downloaded directory:
-```python
-python setup.py install
+```shell
+pip install .
 ```
 
 Creating new CIFTI axes
