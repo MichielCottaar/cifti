@@ -9,5 +9,5 @@ setup(name='cifti',
       author_email='Michiel.Cottaar@ndcn.ox.ac.uk',
       url='https://git.fmrib.ox.ac.uk/ndcn0236/cifti',
       packages=['cifti', 'cifti.tests'],
-      install_requires=['numpy', 'nibabel', 'six'],
+      install_requires=['numpy', 'nibabel>=2.2', 'six'],
       )

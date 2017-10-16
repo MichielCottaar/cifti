@@ -21,9 +21,15 @@ Numpy indexing also works on them (except for Series objects, which have to rema
 
 Installation
 ------------
-This package requires the latest, as yet unreleased, version of nibabel. 
-The master branch can be downloaded from https://github.com/nipy/nibabel.
+This package can be installed directly from github using:
+```shell
+pip install git+https://github.com/MichielCottaar/cifti.git
+```
 
+Alternatively after downloading the package it can be installed by running the following in the downloaded directory:
+```python
+python setup.py install
+```
 
 Creating new CIFTI axes
 -----------------------
