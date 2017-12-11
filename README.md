@@ -13,7 +13,7 @@ Each type of CIFTI axes describing the rows/columns in a CIFTI matrix is given a
 - `Label`: each row/column has a unique name and label table (with optional meta-data)
 All of these classes are derived from `Axis`
 
-Reading a CIFTI file (through `read`) will return a matrix and a pair of axes describing the rows and columns of the matrix. 
+Reading a CIFTI file (through `read`) will return a matrix and a pair of axes describing the rows and columns of the matrix.
 Similarly to write a CIFTI file (through `write`) requires a matrix and a pair of axes.
 
 CIFTI axes of the same type can be concatenated by adding them together. 
@@ -96,4 +96,4 @@ Any CIFTI file can be read using
 arr, (axis1, axis2, ...) = cifti.read('test_file.nii')
 ```
 If the file is not zipped (default for CIFTI) `arr` will be a memory-mapped array, so it should be fast even for a dense connectome. 
-If the CIFTI file is zipped the full data will be loaded into memory, which might take a long time.
+If the CIFTI file is zipped the full data will be loaded into memory, which might take a long time. In that case the `get_axes` function can be used to extract the axes from the header without reading the data.

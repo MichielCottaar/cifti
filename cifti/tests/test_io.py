@@ -78,6 +78,7 @@ def check_rewrite(arr, axes, extension='.nii'):
     arr2, axes2 = io.read(name)
     assert (arr == arr2).all()
     assert (axes == axes2)
+    assert (axes == io.get_axes(name))
     return arr2, axes2
 
 
