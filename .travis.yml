@@ -13,7 +13,7 @@ services:
   - docker
 
 install:
-  - "pip install numpy nibabel>=2.2 six nose coverage"
+  - ./.ci/install.sh
 
 script:
-  - nosetests --with-coverage --cover-package=cifti --where=cifti
+  - ./.ci/test.sh
