@@ -3,11 +3,12 @@
 from setuptools import setup
 
 setup(name='cifti',
-      version='1.0',
+      version='1.1',
       description='Interface to handle CIFTI files',
       author='Michiel Cottaar',
       author_email='Michiel.Cottaar@ndcn.ox.ac.uk',
-      url='https://git.fmrib.ox.ac.uk/ndcn0236/cifti',
+      url='https://github.com/MichielCottaar/cifti',
       packages=['cifti', 'cifti.tests'],
       install_requires=['numpy', 'nibabel>=2.2', 'six'],
+      license='MIT',
       )
