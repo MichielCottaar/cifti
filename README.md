@@ -21,14 +21,9 @@ Numpy indexing also works on them (except for Series objects, which have to rema
 
 Installation
 ------------
-This package can be installed directly from github using:
+This package can be installed directly from pypi using:
 ```shell
-pip install git+https://github.com/MichielCottaar/cifti.git
-```
-
-Alternatively after downloading the package it can be installed by running the following in the downloaded directory:
-```shell
-pip install .
+pip install cifti
 ```
 
 Creating new CIFTI axes
