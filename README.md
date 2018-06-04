@@ -1,3 +1,6 @@
+[![DOI](https://zenodo.org/badge/80036201.svg)](https://zenodo.org/badge/latestdoi/80036201)
+[![Build Status](https://travis-ci.org/MichielCottaar/cifti.svg?branch=master)](https://travis-ci.org/MichielCottaar/cifti)
+
 This module allows for straight-forward creation of CIFTI files and the reading and manipulating of existing ones
 
 The CIFTI format is used in brain imaging to store data acquired across the brain volume (in voxels) and/or 
