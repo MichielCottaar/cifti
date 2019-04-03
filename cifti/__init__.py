@@ -14,5 +14,8 @@ Series : cifti axis describing a time series
 Scalar : cifti axis where each row/column has its own name
 Label : cifti axis where each row/column has its own name and label table
 """
+import warnings
+warnings.warn("the cifti package is deprecated in favor of the Axis implementation in nibabel 2.4.0",
+              DeprecationWarning, stacklevel=2)
 from .io import read, write, get_axes
 from .axis import Axis, Series, Parcels, BrainModel, Label, Scalar
