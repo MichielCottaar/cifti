@@ -1,5 +1,5 @@
-[![DOI](https://zenodo.org/badge/80036201.svg)](https://zenodo.org/badge/latestdoi/80036201)
-[![Build Status](https://travis-ci.org/MichielCottaar/cifti.svg?branch=master)](https://travis-ci.org/MichielCottaar/cifti)
+Deprecation
+-----------
 
 This package is deprecated in favor of the Axis implementation in nibabel 2.4.0 
 ([documentation](https://nipy.org/nibabel/reference/nibabel.cifti2.html#module-nibabel.cifti2.cifti2_axes)).
@@ -13,6 +13,10 @@ With respect to the implementation here there are a few changes of note:
 - `BrainModel.is_surface` is now called `BrainModel.surface_mask` and an opposite `BrainModel.volume_mask` has also been defined.
 - Axis objects are no longer described under the hood by a typed numpy array. This has very little practical effect.
 
+Old documentation
+-----------------
+[![DOI](https://zenodo.org/badge/80036201.svg)](https://zenodo.org/badge/latestdoi/80036201)
+[![Build Status](https://travis-ci.org/MichielCottaar/cifti.svg?branch=master)](https://travis-ci.org/MichielCottaar/cifti)
 This module allows for straight-forward creation of CIFTI files and the reading and manipulating of existing ones
 
 The CIFTI format is used in brain imaging to store data acquired across the brain volume (in voxels) and/or 
