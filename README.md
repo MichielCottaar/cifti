@@ -1,10 +1,8 @@
 [![DOI](https://zenodo.org/badge/80036201.svg)](https://zenodo.org/badge/latestdoi/80036201)
 [![Build Status](https://travis-ci.org/MichielCottaar/cifti.svg?branch=master)](https://travis-ci.org/MichielCottaar/cifti)
 
-<aside class="warning">
 This package is deprecated in favor of the Axis implementation in nibabel 2.4.0 
 ([documentation](https://nipy.org/nibabel/reference/nibabel.cifti2.html#module-nibabel.cifti2.cifti2_axes)).
-</aside>
 
 With respect to the implementation here there are a few changes of note:
 - The Axis objects is now created by calling `to_axes` on the `Cifti2Header` object. A new header can be created using the `from_axes` class method in `Cifti2Header`. This replaces the interface of loading/saving axes objects directly from/to filenames.
